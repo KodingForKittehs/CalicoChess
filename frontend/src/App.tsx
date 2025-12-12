@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Chessboard from './components/Chessboard'
 import Menu from './components/Menu'
 import './App.css'
