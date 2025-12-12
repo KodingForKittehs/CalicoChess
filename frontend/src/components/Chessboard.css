@@ -4,22 +4,26 @@
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .chessboard {
   display: grid;
-  grid-template-columns: repeat(8, 70px);
-  grid-template-rows: repeat(8, 70px);
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
   border: 3px solid #333;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  width: min(560px, 90vw);
+  height: min(560px, 90vw);
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
 }
 
 .square {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 70px;
-  height: 70px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -37,7 +41,7 @@
 }
 
 .piece {
-  font-size: 48px;
+  font-size: clamp(2rem, 6vw, 3rem);
   user-select: none;
   pointer-events: none;
 }
