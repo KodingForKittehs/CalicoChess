@@ -1,6 +1,8 @@
 ![Calico Chess Logo](./CalicoChess_1024.png)
 
 # Calico Chess
+https://kodingforkittehs.github.io/CalicoChess/
+
 Keeps the positions you like to play close by for easy study and review
 
 ## Features
