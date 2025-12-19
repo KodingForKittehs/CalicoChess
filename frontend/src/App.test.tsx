@@ -23,7 +23,7 @@ describe('App', () => {
 
   it('renders Chessboard component', () => {
     const { container } = renderWithProvider(<App />)
-    expect(container.querySelector('.chessboard')).toBeInTheDocument()
+    expect(container.querySelector('.chessboard-container')).toBeInTheDocument()
   })
 
   it('calls handleNewGame when New Game button is clicked', () => {
