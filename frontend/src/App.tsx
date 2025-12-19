@@ -1,8 +1,14 @@
+import { useState } from 'react'
 import Chessboard from './components/Chessboard'
 import Menu from './components/Menu'
+import SettingsModal from './components/SettingsModal'
 import './App.css'
 
 function App() {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [lightSquareColor, setLightSquareColor] = useState('#f0d9b5')
+  const [darkSquareColor, setDarkSquareColor] = useState('#b58863')
+
   const handleNewGame = () => {
     console.log('New Game clicked')
     // TODO: Implement new game logic
@@ -29,8 +35,11 @@ function App() {
   }
 
   const handleSettings = () => {
-    console.log('Settings clicked')
-    // TODO: Implement settings logic
+    setIsSettingsOpen(true)
+  }
+
+  const handleCloseSettings = () => {
+    setIsSettingsOpen(false)
   }
 
   return (
@@ -44,7 +53,18 @@ function App() {
           onRedo={handleRedo}
           onSettings={handleSettings}
         />
-        <Chessboard />
+        <Chessboard 
+          lightSquareColor={lightSquareColor}
+          darkSquareColor={darkSquareColor}
+        />
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={handleCloseSettings}
+          lightSquareColor={lightSquareColor}
+          darkSquareColor={darkSquareColor}
+          onLightSquareColorChange={setLightSquareColor}
+          onDarkSquareColorChange={setDarkSquareColor}
+        />
       </div>
     </div>
   )

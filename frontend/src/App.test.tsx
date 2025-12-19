@@ -65,11 +65,17 @@ describe('App', () => {
     expect(consoleLogSpy).toHaveBeenCalledWith('Redo clicked')
   })
 
-  it('calls handleSettings when Settings button is clicked', () => {
-    consoleLogSpy.mockClear()
-    render(<App />)
+  it('opens settings modal when Settings button is clicked', () => {
+    const { container } = render(<App />)
     
+    // Modal should not be visible initially
+    expect(container.querySelector('.settings-modal')).not.toBeInTheDocument()
+    
+    // Click Settings button
     fireEvent.click(screen.getByText('Settings'))
-    expect(consoleLogSpy).toHaveBeenCalledWith('Settings clicked')
+    
+    // Modal should now be visible
+    expect(container.querySelector('.settings-modal')).toBeInTheDocument()
+    expect(screen.getByText('Board Settings')).toBeInTheDocument()
   })
 })

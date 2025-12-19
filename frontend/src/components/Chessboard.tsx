@@ -17,15 +17,28 @@ const INITIAL_POSITION = [
   ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
 ];
 
-const Chessboard: React.FC = () => {
+interface ChessboardProps {
+  lightSquareColor?: string;
+  darkSquareColor?: string;
+}
+
+const Chessboard: React.FC<ChessboardProps> = ({ 
+  lightSquareColor = '#f0d9b5', 
+  darkSquareColor = '#b58863' 
+}) => {
   const [board] = React.useState(INITIAL_POSITION);
 
   const renderSquare = (piece: string, row: number, col: number) => {
     const isLight = (row + col) % 2 === 0;
     const squareClass = `square ${isLight ? 'light' : 'dark'}`;
+    const backgroundColor = isLight ? lightSquareColor : darkSquareColor;
     
     return (
-      <div key={`${row}-${col}`} className={squareClass}>
+      <div 
+        key={`${row}-${col}`} 
+        className={squareClass}
+        style={{ backgroundColor }}
+      >
         {piece && <span className="piece">{PIECES[piece as keyof typeof PIECES]}</span>}
       </div>
     );
