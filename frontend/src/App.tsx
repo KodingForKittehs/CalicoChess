@@ -2,12 +2,12 @@ import { useState } from 'react'
 import Chessboard from './components/Chessboard'
 import Menu from './components/Menu'
 import SettingsModal from './components/SettingsModal'
+import { useAppState } from './contexts/AppStateContext'
 import './App.css'
 
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [lightSquareColor, setLightSquareColor] = useState('#f0d9b5')
-  const [darkSquareColor, setDarkSquareColor] = useState('#b58863')
+  const { state } = useAppState()
 
   const handleNewGame = () => {
     console.log('New Game clicked')
@@ -54,16 +54,12 @@ function App() {
           onSettings={handleSettings}
         />
         <Chessboard 
-          lightSquareColor={lightSquareColor}
-          darkSquareColor={darkSquareColor}
+          lightSquareColor={state.preferences.lightSquareColor}
+          darkSquareColor={state.preferences.darkSquareColor}
         />
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={handleCloseSettings}
-          lightSquareColor={lightSquareColor}
-          darkSquareColor={darkSquareColor}
-          onLightSquareColorChange={setLightSquareColor}
-          onDarkSquareColorChange={setDarkSquareColor}
         />
       </div>
     </div>

@@ -1,23 +1,20 @@
+import { useState } from 'react'
+import { useAppState } from '../contexts/AppStateContext'
 import './SettingsModal.css'
 
 interface SettingsModalProps {
   isOpen: boolean
   onClose: () => void
-  lightSquareColor: string
-  darkSquareColor: string
-  onLightSquareColorChange: (color: string) => void
-  onDarkSquareColorChange: (color: string) => void
 }
 
 function SettingsModal({
   isOpen,
-  onClose,
-  lightSquareColor,
-  darkSquareColor,
-  onLightSquareColorChange,
-  onDarkSquareColorChange
+  onClose
 }: SettingsModalProps) {
   if (!isOpen) return null
+
+  const { state, updateLightSquareColor, updateDarkSquareColor, exportAppState, importAppState, resetAppState } = useAppState()
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
 
   const presetThemes = [
     { name: 'Classic', light: '#f0d9b5', dark: '#b58863' },
@@ -29,14 +26,50 @@ function SettingsModal({
   ]
 
   const handleThemeClick = (light: string, dark: string) => {
-    onLightSquareColorChange(light)
-    onDarkSquareColorChange(dark)
+    updateLightSquareColor(light)
+    updateDarkSquareColor(dark)
   }
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose()
     }
+  }
+
+  const handleExport = () => {
+    try {
+      exportAppState()
+      showMessage('State exported successfully!', 'success')
+    } catch (error) {
+      showMessage('Failed to export state', 'error')
+    }
+  }
+
+  const handleImport = async () => {
+    try {
+      await importAppState()
+      showMessage('State imported successfully!', 'success')
+    } catch (error) {
+      if (error instanceof Error && error.message !== 'Import cancelled') {
+        showMessage(`Failed to import state: ${error.message}`, 'error')
+      }
+    }
+  }
+
+  const handleReset = () => {
+    if (window.confirm('Are you sure you want to reset all settings to default? This cannot be undone.')) {
+      try {
+        resetAppState()
+        showMessage('Settings reset successfully!', 'success')
+      } catch (error) {
+        showMessage('Failed to reset settings', 'error')
+      }
+    }
+  }
+
+  const showMessage = (text: string, type: 'success' | 'error') => {
+    setMessage({ text, type })
+    setTimeout(() => setMessage(null), 3000)
   }
 
   return (
@@ -58,10 +91,10 @@ function SettingsModal({
                   <input
                     type="color"
                     id="light-square-color"
-                    value={lightSquareColor}
-                    onChange={(e) => onLightSquareColorChange(e.target.value)}
+                    value={state.preferences.lightSquareColor}
+                    onChange={(e) => updateLightSquareColor(e.target.value)}
                   />
-                  <span className="color-value">{lightSquareColor}</span>
+                  <span className="color-value">{state.preferences.lightSquareColor}</span>
                 </div>
               </div>
 
@@ -71,10 +104,10 @@ function SettingsModal({
                   <input
                     type="color"
                     id="dark-square-color"
-                    value={darkSquareColor}
-                    onChange={(e) => onDarkSquareColorChange(e.target.value)}
+                    value={state.preferences.darkSquareColor}
+                    onChange={(e) => updateDarkSquareColor(e.target.value)}
                   />
-                  <span className="color-value">{darkSquareColor}</span>
+                  <span className="color-value">{state.preferences.darkSquareColor}</span>
                 </div>
               </div>
             </div>
@@ -105,6 +138,30 @@ function SettingsModal({
               ))}
             </div>
           </div>
+
+          <div className="state-management-section">
+            <h3>State Management</h3>
+            <div className="state-buttons">
+              <button className="state-button export" onClick={handleExport}>
+                Export Settings
+              </button>
+              <button className="state-button import" onClick={handleImport}>
+                Import Settings
+              </button>
+              <button className="state-button reset" onClick={handleReset}>
+                Reset to Default
+              </button>
+            </div>
+            <p className="state-info">
+              Export your preferences and repertoires as a JSON file, or import a previously saved state.
+            </p>
+          </div>
+
+          {message && (
+            <div className={`message ${message.type}`}>
+              {message.text}
+            </div>
+          )}
         </div>
       </div>
     </div>
