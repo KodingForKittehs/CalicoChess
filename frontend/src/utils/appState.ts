@@ -17,6 +17,7 @@ export interface BoardPreferences {
   darkSquareColor: string
   boardSize: number
   theme: string // theme name
+  boardOrientation?: Perspective
   moveExplorerWidth: number
   moveExplorerHeight: number
   swapBoardExplorer?: boolean
@@ -116,6 +117,7 @@ export const DEFAULT_STATE: AppState = {
     darkSquareColor: '#b58863',
     boardSize: 480,
     theme: 'calico',
+    boardOrientation: 'white',
     moveExplorerWidth: 320,
     moveExplorerHeight: 400
     ,

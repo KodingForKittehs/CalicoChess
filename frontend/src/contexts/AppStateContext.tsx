@@ -22,6 +22,7 @@ interface AppStateContextType {
   updateBoardSize: (size: number) => void
   updateTheme: (themeName: string) => void
   updateSwapBoardExplorer: (swap: boolean) => void
+  updateBoardOrientation: (orientation: 'white' | 'black') => void
   updateMoveExplorerDimensions: (width: number, height: number) => void
   addRepertoire: (name: string, perspective: 'white' | 'black') => void
   updateRepertoire: (id: string, updates: Partial<Omit<Repertoire, 'id'>>) => void
@@ -84,6 +85,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       preferences: {
         ...prev.preferences,
         theme: themeName
+      }
+    }))
+  }
+
+  const updateBoardOrientation = (orientation: 'white' | 'black') => {
+    setState(prev => ({
+      ...prev,
+      preferences: {
+        ...prev.preferences,
+        boardOrientation: orientation
       }
     }))
   }
@@ -157,11 +168,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setState(prev => {
       // Find the repertoire to get its root node
       const repertoire = prev.repertoires.find(rep => rep.id === id);
+      // If repertoire has a perspective, set board orientation accordingly
+      const orientation = repertoire?.perspective || prev.preferences.boardOrientation || 'white'
       return {
         ...prev,
         selectedRepertoireId: id,
         repertoireMode: mode,
-        currentPositionNodeId: repertoire?.rootNodeId || null
+        currentPositionNodeId: repertoire?.rootNodeId || null,
+        preferences: {
+          ...prev.preferences,
+          boardOrientation: orientation
+        }
       };
     });
   }
@@ -183,6 +200,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         updateBoardSize,
         updateTheme,
         updateSwapBoardExplorer,
+        updateBoardOrientation,
         updateMoveExplorerDimensions,
         addRepertoire,
         updateRepertoire,

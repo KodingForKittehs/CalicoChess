@@ -221,4 +221,46 @@ describe('Chessboard', () => {
     // Should still be in editing mode
     expect(screen.getByText(/Editing Mode/)).toBeInTheDocument()
   })
+
+  it('flip button toggles orientation and persists preference', async () => {
+    const mockState: Partial<AppState> = {
+      selectedRepertoireId: 'rep_test',
+      repertoireMode: 'editing',
+      repertoires: [{
+        id: 'rep_test',
+        name: 'Test Repertoire',
+        perspective: 'white',
+        rootNodeId: 'initial',
+        nodes: {
+          initial: {
+            id: 'initial',
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: [],
+            parentMoves: []
+          }
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }]
+    }
+
+    const { container } = renderWithProvider(<Chessboard />, mockState)
+    const flipButton = container.querySelector('.flip-board-button') as HTMLElement
+    expect(flipButton).toBeInTheDocument()
+
+    // Initially orientation should be white (default)
+    const before = JSON.parse(localStorage.getItem('calicoChessState') as string)
+    expect(before.preferences.boardOrientation).toBe('white')
+
+    // Click flip
+    flipButton.click()
+
+    // Wait for state persistence
+    const { waitFor } = await import('@testing-library/react')
+    await waitFor(() => {
+      const after = JSON.parse(localStorage.getItem('calicoChessState') as string)
+      if (!after || !after.preferences) throw new Error('not saved yet')
+      expect(after.preferences.boardOrientation).toBe('black')
+    })
+  })
 })

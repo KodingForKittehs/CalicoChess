@@ -18,6 +18,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   onBoardSizeChange
 }) => {
   const { state, currentTheme, updateRepertoire } = useAppState();
+  const { updateBoardOrientation } = useAppState();
   const [game, setGame] = useState(new Chess());
   const [position, setPosition] = useState(game.fen());
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
@@ -48,6 +49,17 @@ const Chessboard: React.FC<ChessboardProps> = ({
       setMoveHistory([]);
     }
   }, [isEditingMode, selectedRepertoire, state.currentPositionNodeId]);
+
+  // Local orientation state driven by app preferences / repertoire
+  const [orientation, setOrientation] = useState<'white' | 'black'>(
+    (selectedRepertoire?.perspective as 'white' | 'black') || state.preferences.boardOrientation || 'white'
+  );
+
+  // Sync orientation when selected repertoire or preferences change
+  useEffect(() => {
+    const derived = (selectedRepertoire?.perspective as 'white' | 'black') || state.preferences.boardOrientation || 'white'
+    setOrientation(derived)
+  }, [selectedRepertoire?.id, state.preferences.boardOrientation]);
 
   // Handle piece drop for editing mode
   function onDrop(args: { piece: any; sourceSquare: string; targetSquare: string | null }): boolean {
@@ -223,6 +235,21 @@ const Chessboard: React.FC<ChessboardProps> = ({
             >
               ⟲ Reset
             </button>
+            <button
+              className="edit-button flip-board-button"
+              onClick={() => {
+                const next = orientation === 'white' ? 'black' : 'white'
+                setOrientation(next)
+                updateBoardOrientation(next)
+              }}
+              title="Flip board"
+              style={{
+                backgroundColor: currentTheme.accent,
+                color: '#ffffff'
+              }}
+            >
+              ⇅ Flip
+            </button>
           </div>
         </div>
       )}
@@ -231,7 +258,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
           options={{
             position: position,
             onPieceDrop: isEditingMode ? onDrop : undefined,
-            boardOrientation: selectedRepertoire?.perspective === 'black' ? 'black' : 'white',
+            boardOrientation: orientation,
             boardStyle: { 
               width: `${boardSize}px`,
               height: `${boardSize}px`
