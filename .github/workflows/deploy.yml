@@ -35,7 +35,7 @@ jobs:
 
       - name: Generate version file
         run: |
-          TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           SHORT_SHA=$(git rev-parse --short=8 HEAD)
           VERSION="${TIMESTAMP}-${SHORT_SHA}"
           mkdir -p frontend/src
