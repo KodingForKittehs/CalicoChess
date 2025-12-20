@@ -8,7 +8,7 @@ import './App.css'
 
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const { state, updateBoardSize } = useAppState()
+  const { state, currentTheme, updateBoardSize } = useAppState()
 
   const handleNewGame = () => {
     console.log('New Game clicked')
@@ -44,7 +44,13 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div 
+      className="app" 
+      style={{ 
+        background: currentTheme.background,
+        color: currentTheme.foreground 
+      }}
+    >
       <div className="app-container">
         <Menu
           onNewGame={handleNewGame}

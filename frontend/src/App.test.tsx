@@ -78,10 +78,12 @@ describe('App', () => {
     expect(container.querySelector('.settings-modal')).not.toBeInTheDocument()
     
     // Click Settings button
-    fireEvent.click(screen.getByText('Settings'))
+    const buttons = screen.getAllByText('Settings')
+    const settingsButton = buttons[0] // First one is the menu button
+    fireEvent.click(settingsButton)
     
     // Modal should now be visible
     expect(container.querySelector('.settings-modal')).toBeInTheDocument()
-    expect(screen.getByText('Board Settings')).toBeInTheDocument()
+    expect(container.querySelector('.settings-header')).toBeInTheDocument()
   })
 })

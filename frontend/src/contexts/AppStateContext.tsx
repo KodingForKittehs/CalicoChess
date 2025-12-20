@@ -1,13 +1,15 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
-import type { AppState } from '../utils/appState'
-import { loadState, saveState, exportState, importState, resetState } from '../utils/appState'
+import type { AppState, Theme } from '../utils/appState'
+import { loadState, saveState, exportState, importState, resetState, getCurrentTheme, THEMES } from '../utils/appState'
 
 interface AppStateContextType {
   state: AppState
+  currentTheme: Theme
   updateLightSquareColor: (color: string) => void
   updateDarkSquareColor: (color: string) => void
   updateBoardSize: (size: number) => void
+  updateTheme: (themeName: string) => void
   exportAppState: () => void
   importAppState: () => Promise<void>
   resetAppState: () => void
@@ -17,6 +19,7 @@ const AppStateContext = createContext<AppStateContextType | undefined>(undefined
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(loadState())
+  const currentTheme = getCurrentTheme(state)
 
   // Automatically sync to localStorage whenever state changes
   useEffect(() => {
@@ -53,6 +56,20 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }))
   }
 
+  const updateTheme = (themeName: string) => {
+    if (!THEMES[themeName]) {
+      console.error(`Theme "${themeName}" not found`)
+      return
+    }
+    setState(prev => ({
+      ...prev,
+      preferences: {
+        ...prev.preferences,
+        theme: themeName
+      }
+    }))
+  }
+
   const exportAppState = () => {
     exportState()
   }
@@ -71,9 +88,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     <AppStateContext.Provider
       value={{
         state,
+        currentTheme,
         updateLightSquareColor,
         updateDarkSquareColor,
         updateBoardSize,
+        updateTheme,
         exportAppState,
         importAppState,
         resetAppState

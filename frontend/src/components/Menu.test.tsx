@@ -1,10 +1,11 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent } from '@testing-library/react'
+import { renderWithProvider } from '../test/testUtils'
 import Menu from './Menu'
 
 describe('Menu', () => {
   it('renders all buttons', () => {
-    render(<Menu />)
+    renderWithProvider(<Menu />)
     
     expect(screen.getByText('New Game')).toBeInTheDocument()
     expect(screen.getByText('Save')).toBeInTheDocument()
@@ -16,7 +17,7 @@ describe('Menu', () => {
 
   it('calls onNewGame when New Game button is clicked', () => {
     const mockOnNewGame = vi.fn()
-    render(<Menu onNewGame={mockOnNewGame} />)
+    renderWithProvider(<Menu onNewGame={mockOnNewGame} />)
     
     fireEvent.click(screen.getByText('New Game'))
     expect(mockOnNewGame).toHaveBeenCalledTimes(1)
@@ -24,7 +25,7 @@ describe('Menu', () => {
 
   it('calls onSave when Save button is clicked', () => {
     const mockOnSave = vi.fn()
-    render(<Menu onSave={mockOnSave} />)
+    renderWithProvider(<Menu onSave={mockOnSave} />)
     
     fireEvent.click(screen.getByText('Save'))
     expect(mockOnSave).toHaveBeenCalledTimes(1)
@@ -32,7 +33,7 @@ describe('Menu', () => {
 
   it('calls onLoad when Load button is clicked', () => {
     const mockOnLoad = vi.fn()
-    render(<Menu onLoad={mockOnLoad} />)
+    renderWithProvider(<Menu onLoad={mockOnLoad} />)
     
     fireEvent.click(screen.getByText('Load'))
     expect(mockOnLoad).toHaveBeenCalledTimes(1)
@@ -40,7 +41,7 @@ describe('Menu', () => {
 
   it('calls onUndo when Undo button is clicked', () => {
     const mockOnUndo = vi.fn()
-    render(<Menu onUndo={mockOnUndo} />)
+    renderWithProvider(<Menu onUndo={mockOnUndo} />)
     
     fireEvent.click(screen.getByText('Undo'))
     expect(mockOnUndo).toHaveBeenCalledTimes(1)
@@ -48,7 +49,7 @@ describe('Menu', () => {
 
   it('calls onRedo when Redo button is clicked', () => {
     const mockOnRedo = vi.fn()
-    render(<Menu onRedo={mockOnRedo} />)
+    renderWithProvider(<Menu onRedo={mockOnRedo} />)
     
     fireEvent.click(screen.getByText('Redo'))
     expect(mockOnRedo).toHaveBeenCalledTimes(1)
@@ -56,14 +57,14 @@ describe('Menu', () => {
 
   it('calls onSettings when Settings button is clicked', () => {
     const mockOnSettings = vi.fn()
-    render(<Menu onSettings={mockOnSettings} />)
+    renderWithProvider(<Menu onSettings={mockOnSettings} />)
     
     fireEvent.click(screen.getByText('Settings'))
     expect(mockOnSettings).toHaveBeenCalledTimes(1)
   })
 
   it('does not crash when handlers are not provided', () => {
-    render(<Menu />)
+    renderWithProvider(<Menu />)
     
     fireEvent.click(screen.getByText('New Game'))
     fireEvent.click(screen.getByText('Save'))

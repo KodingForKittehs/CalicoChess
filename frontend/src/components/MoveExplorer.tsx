@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
+import { useAppState } from '../contexts/AppStateContext';
 import './MoveExplorer.css';
 
 const MoveExplorer: React.FC = () => {
+  const { currentTheme } = useAppState();
   const [dimensions, setDimensions] = useState({ width: 320, height: 400 });
   const isDraggingRef = useRef(false);
   const startPosRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
@@ -38,7 +40,15 @@ const MoveExplorer: React.FC = () => {
   };
 
   return (
-    <div className="move-explorer" style={{ width: `${dimensions.width}px`, height: `${dimensions.height}px` }}>
+    <div 
+      className="move-explorer" 
+      style={{ 
+        width: `${dimensions.width}px`, 
+        height: `${dimensions.height}px`,
+        backgroundColor: currentTheme.cardBackground,
+        color: currentTheme.foreground
+      }}
+    >
       <div className="move-explorer-header">
         <h3>Move Explorer</h3>
       </div>

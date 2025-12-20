@@ -1,33 +1,34 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent } from '@testing-library/react'
+import { renderWithProvider } from '../test/testUtils'
 import MoveExplorer from './MoveExplorer'
 
 describe('MoveExplorer', () => {
   it('renders without crashing', () => {
-    render(<MoveExplorer />)
+    renderWithProvider(<MoveExplorer />)
     expect(screen.getByText('Move Explorer')).toBeInTheDocument()
   })
 
   it('renders placeholder text', () => {
-    render(<MoveExplorer />)
+    renderWithProvider(<MoveExplorer />)
     expect(screen.getByText('Move history and analysis will appear here')).toBeInTheDocument()
   })
 
   it('has the correct structure', () => {
-    const { container } = render(<MoveExplorer />)
+    const { container } = renderWithProvider(<MoveExplorer />)
     expect(container.querySelector('.move-explorer')).toBeInTheDocument()
     expect(container.querySelector('.move-explorer-header')).toBeInTheDocument()
     expect(container.querySelector('.move-explorer-content')).toBeInTheDocument()
   })
 
   it('renders resize handle', () => {
-    const { container } = render(<MoveExplorer />)
+    const { container } = renderWithProvider(<MoveExplorer />)
     const resizeHandle = container.querySelector('.resize-handle')
     expect(resizeHandle).toBeInTheDocument()
   })
 
   it('handles drag resize', () => {
-    const { container } = render(<MoveExplorer />)
+    const { container } = renderWithProvider(<MoveExplorer />)
     
     const resizeHandle = container.querySelector('.resize-handle') as HTMLElement
     const moveExplorer = container.querySelector('.move-explorer') as HTMLElement
@@ -54,7 +55,7 @@ describe('MoveExplorer', () => {
   })
 
   it('respects minimum size during drag resize', () => {
-    const { container } = render(<MoveExplorer />)
+    const { container } = renderWithProvider(<MoveExplorer />)
     
     const resizeHandle = container.querySelector('.resize-handle') as HTMLElement
     const moveExplorer = container.querySelector('.move-explorer') as HTMLElement
@@ -72,7 +73,7 @@ describe('MoveExplorer', () => {
   })
 
   it('respects maximum size during drag resize', () => {
-    const { container } = render(<MoveExplorer />)
+    const { container } = renderWithProvider(<MoveExplorer />)
     
     const resizeHandle = container.querySelector('.resize-handle') as HTMLElement
     const moveExplorer = container.querySelector('.move-explorer') as HTMLElement

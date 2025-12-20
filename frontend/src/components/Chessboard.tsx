@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Chessboard as ReactChessboard } from 'react-chessboard';
+import { useAppState } from '../contexts/AppStateContext';
 import './Chessboard.css';
 
 interface ChessboardProps {
@@ -15,6 +16,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   boardSize = 560,
   onBoardSizeChange
 }) => {
+  const { currentTheme } = useAppState();
   const isDraggingRef = useRef(false);
   const startPosRef = useRef({ x: 0, y: 0, size: 0 });
 
@@ -49,7 +51,12 @@ const Chessboard: React.FC<ChessboardProps> = ({
   };
 
   return (
-    <div className="chessboard-container">
+    <div 
+      className="chessboard-container" 
+      style={{ 
+        backgroundColor: currentTheme.cardBackground 
+      }}
+    >
       <div className="resizable-wrapper">
         <ReactChessboard 
           options={{

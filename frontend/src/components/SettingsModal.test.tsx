@@ -24,7 +24,8 @@ describe('SettingsModal', () => {
       <SettingsModal isOpen={true} onClose={mockOnClose} />
     )
     
-    expect(screen.getByText('Board Settings')).toBeInTheDocument()
+    expect(screen.getByText('Settings')).toBeInTheDocument()
+    expect(screen.getByText('App Theme')).toBeInTheDocument()
     expect(screen.getByText('Square Colors')).toBeInTheDocument()
     expect(screen.getByText('Preset Themes')).toBeInTheDocument()
     expect(screen.getByText('State Management')).toBeInTheDocument()
@@ -97,13 +98,15 @@ describe('SettingsModal', () => {
     })
   })
 
-  it('applies preset theme', async () => {
-    renderWithProvider(
+  it('applies preset board color theme', async () => {
+    const { container } = renderWithProvider(
       <SettingsModal isOpen={true} onClose={mockOnClose} />
     )
     
-    // Click the Blue theme
-    fireEvent.click(screen.getByTitle('Blue'))
+    // Click the Blue board color preset theme (within preset-section)
+    const presetSection = container.querySelector('.preset-section')
+    const bluePreset = presetSection?.querySelector('[title="Blue"]') as HTMLElement
+    fireEvent.click(bluePreset)
     
     await waitFor(() => {
       const lightInput = screen.getByLabelText('Light Squares') as HTMLInputElement
@@ -114,17 +117,18 @@ describe('SettingsModal', () => {
     })
   })
 
-  it('shows all preset themes', () => {
-    renderWithProvider(
+  it('shows all board color preset themes', () => {
+    const { container } = renderWithProvider(
       <SettingsModal isOpen={true} onClose={mockOnClose} />
     )
     
-    expect(screen.getByTitle('Classic')).toBeInTheDocument()
-    expect(screen.getByTitle('Blue')).toBeInTheDocument()
-    expect(screen.getByTitle('Green')).toBeInTheDocument()
-    expect(screen.getByTitle('Brown')).toBeInTheDocument()
-    expect(screen.getByTitle('Purple')).toBeInTheDocument()
-    expect(screen.getByTitle('Grey')).toBeInTheDocument()
+    const presetSection = container.querySelector('.preset-section')
+    expect(presetSection?.querySelector('[title="Classic"]')).toBeInTheDocument()
+    expect(presetSection?.querySelector('[title="Blue"]')).toBeInTheDocument()
+    expect(presetSection?.querySelector('[title="Green"]')).toBeInTheDocument()
+    expect(presetSection?.querySelector('[title="Brown"]')).toBeInTheDocument()
+    expect(presetSection?.querySelector('[title="Purple"]')).toBeInTheDocument()
+    expect(presetSection?.querySelector('[title="Grey"]')).toBeInTheDocument()
   })
 
   it('displays state management buttons', () => {
@@ -179,5 +183,42 @@ describe('SettingsModal', () => {
     expect(screen.queryByText('Settings reset successfully!')).not.toBeInTheDocument()
 
     confirmSpy.mockRestore()
+  })
+
+  it('shows all app theme options', () => {
+    const { container } = renderWithProvider(
+      <SettingsModal isOpen={true} onClose={mockOnClose} />
+    )
+    
+    const themeSection = container.querySelector('.theme-section')
+    expect(themeSection?.querySelector('[title="Calico"]')).toBeInTheDocument()
+    expect(themeSection?.querySelector('[title="Blue"]')).toBeInTheDocument()
+    expect(themeSection?.querySelector('[title="Dark"]')).toBeInTheDocument()
+    expect(themeSection?.querySelector('[title="Forest"]')).toBeInTheDocument()
+  })
+
+  it('displays current theme', () => {
+    renderWithProvider(
+      <SettingsModal isOpen={true} onClose={mockOnClose} />
+    )
+    
+    expect(screen.getByText(/Current theme:/)).toBeInTheDocument()
+    const themeInfo = screen.getByText(/Current theme:/)
+    expect(themeInfo.textContent).toContain('Calico')
+  })
+
+  it('changes app theme when theme button is clicked', async () => {
+    const { container } = renderWithProvider(
+      <SettingsModal isOpen={true} onClose={mockOnClose} />
+    )
+    
+    const themeSection = container.querySelector('.theme-section')
+    const darkTheme = themeSection?.querySelector('[title="Dark"]') as HTMLElement
+    
+    fireEvent.click(darkTheme)
+    
+    await waitFor(() => {
+      expect(darkTheme.classList.contains('active')).toBe(true)
+    })
   })
 })

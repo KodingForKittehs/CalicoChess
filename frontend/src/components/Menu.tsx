@@ -1,3 +1,4 @@
+import { useAppState } from '../contexts/AppStateContext'
 import './Menu.css'
 
 interface MenuProps {
@@ -10,8 +11,16 @@ interface MenuProps {
 }
 
 function Menu({ onNewGame, onSave, onLoad, onUndo, onRedo, onSettings }: MenuProps) {
+  const { currentTheme } = useAppState()
+  
   return (
-    <div className="menu">
+    <div 
+      className="menu" 
+      style={{ 
+        backgroundColor: currentTheme.cardBackground,
+        color: currentTheme.foreground 
+      }}
+    >
       <div className="menu-section">
         <button className="menu-button" onClick={onNewGame}>
           New Game

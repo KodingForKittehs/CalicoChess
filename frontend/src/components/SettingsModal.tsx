@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAppState } from '../contexts/AppStateContext'
+import { THEMES } from '../utils/appState'
 import './SettingsModal.css'
 
 interface SettingsModalProps {
@@ -13,7 +14,7 @@ function SettingsModal({
 }: SettingsModalProps) {
   if (!isOpen) return null
 
-  const { state, updateLightSquareColor, updateDarkSquareColor, exportAppState, importAppState, resetAppState } = useAppState()
+  const { state, currentTheme, updateLightSquareColor, updateDarkSquareColor, updateTheme, exportAppState, importAppState, resetAppState } = useAppState()
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
 
   const presetThemes = [
@@ -76,11 +77,36 @@ function SettingsModal({
     <div className="settings-overlay" onClick={handleOverlayClick}>
       <div className="settings-modal">
         <div className="settings-header">
-          <h2>Board Settings</h2>
+          <h2>Settings</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
         
         <div className="settings-content">
+          <div className="theme-section">
+            <h3>App Theme</h3>
+            <div className="theme-selector">
+              {Object.entries(THEMES).map(([key, theme]) => (
+                <button
+                  key={key}
+                  className={`theme-option ${state.preferences.theme === key ? 'active' : ''}`}
+                  onClick={() => updateTheme(key)}
+                  title={theme.name}
+                >
+                  <div 
+                    className="theme-preview-large" 
+                    style={{ background: theme.background }}
+                  >
+                    <div className="theme-accent" style={{ backgroundColor: theme.accent }}></div>
+                  </div>
+                  <span className="theme-name">{theme.name}</span>
+                </button>
+              ))}
+            </div>
+            <p className="theme-info">
+              Current theme: <strong>{currentTheme.name}</strong>
+            </p>
+          </div>
+
           <div className="color-section">
             <h3>Square Colors</h3>
             

@@ -3,10 +3,19 @@
  * Handles persistence, import, and export of user settings and repertoires
  */
 
+export interface Theme {
+  name: string
+  background: string
+  foreground: string
+  accent: string
+  cardBackground: string
+}
+
 export interface BoardPreferences {
   lightSquareColor: string
   darkSquareColor: string
   boardSize: number
+  theme: string // theme name
 }
 
 export interface Repertoire {
@@ -23,12 +32,45 @@ export interface AppState {
   lastModified: string
 }
 
+// Built-in themes
+export const THEMES: Record<string, Theme> = {
+  calico: {
+    name: 'Calico',
+    background: 'linear-gradient(135deg, #f4e4d7 0%, #e8d5c4 25%, #d4a574 50%, #8b6f47 75%, #5a4a3a 100%)',
+    foreground: '#2c1810',
+    accent: '#d4a574',
+    cardBackground: 'rgba(244, 228, 215, 0.95)'
+  },
+  blue: {
+    name: 'Blue',
+    background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+    foreground: '#ffffff',
+    accent: '#4a90e2',
+    cardBackground: 'rgba(255, 255, 255, 0.95)'
+  },
+  dark: {
+    name: 'Dark',
+    background: 'linear-gradient(135deg, #232526 0%, #414345 100%)',
+    foreground: '#ffffff',
+    accent: '#667eea',
+    cardBackground: 'rgba(60, 60, 60, 0.95)'
+  },
+  forest: {
+    name: 'Forest',
+    background: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)',
+    foreground: '#ffffff',
+    accent: '#71b280',
+    cardBackground: 'rgba(255, 255, 255, 0.95)'
+  }
+}
+
 const DEFAULT_STATE: AppState = {
   version: '1.0.0',
   preferences: {
     lightSquareColor: '#f0d9b5',
     darkSquareColor: '#b58863',
-    boardSize: 480
+    boardSize: 480,
+    theme: 'calico'
   },
   repertoires: [],
   lastModified: new Date().toISOString()
@@ -89,6 +131,24 @@ export function updatePreferences(preferences: Partial<BoardPreferences>): void 
     }
   }
   saveState(updatedState)
+}
+
+/**
+ * Update theme
+ */
+export function updateTheme(themeName: string): void {
+  if (!THEMES[themeName]) {
+    console.error(`Theme "${themeName}" not found`)
+    return
+  }
+  updatePreferences({ theme: themeName })
+}
+
+/**
+ * Get current theme
+ */
+export function getCurrentTheme(state: AppState): Theme {
+  return THEMES[state.preferences.theme] || THEMES.calico
 }
 
 /**
