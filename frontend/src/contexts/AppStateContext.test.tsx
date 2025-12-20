@@ -13,6 +13,7 @@ function TestComponent() {
     addRepertoire,
     updateRepertoire,
     deleteRepertoire,
+    navigateToPosition,
     resetAppState 
   } = useAppState()
 
@@ -23,6 +24,7 @@ function TestComponent() {
       <div data-testid="board-size">{state.preferences.boardSize}</div>
       <div data-testid="version">{state.version}</div>
       <div data-testid="repertoire-count">{state.repertoires.length}</div>
+      <div data-testid="current-position">{state.currentPositionNodeId || 'none'}</div>
       {state.repertoires.map(rep => (
         <div key={rep.id} data-testid={`repertoire-${rep.id}`}>
           {rep.name} - {rep.perspective}
@@ -55,6 +57,9 @@ function TestComponent() {
         }
       }}>
         Delete Repertoire
+      </button>
+      <button onClick={() => navigateToPosition('test-node-id')}>
+        Navigate
       </button>
       <button onClick={resetAppState}>Reset</button>
     </div>
@@ -220,6 +225,18 @@ describe('AppStateContext', () => {
       expect(state.repertoires).toHaveLength(1)
       expect(state.repertoires[0].name).toBe('Test Repertoire')
       expect(state.repertoires[0].perspective).toBe('white')
+    })
+  })
+
+  it('navigates to a position', async () => {
+    renderWithProvider(<TestComponent />)
+    
+    expect(screen.getByTestId('current-position')).toHaveTextContent('none')
+    
+    fireEvent.click(screen.getByText('Navigate'))
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('current-position')).toHaveTextContent('test-node-id')
     })
   })
 })

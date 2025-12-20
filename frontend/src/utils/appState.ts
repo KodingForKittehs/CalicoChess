@@ -68,6 +68,7 @@ export interface AppState {
   repertoires: Repertoire[]
   selectedRepertoireId: string | null // Currently selected repertoire
   repertoireMode: RepertoireMode | null // Current mode: training or editing
+  currentPositionNodeId: string | null // Current position being examined in Move Explorer
   lastModified: string
 }
 
@@ -120,6 +121,7 @@ export const DEFAULT_STATE: AppState = {
   repertoires: [],
   selectedRepertoireId: null,
   repertoireMode: null,
+  currentPositionNodeId: null,
   lastModified: new Date().toISOString()
 }
 

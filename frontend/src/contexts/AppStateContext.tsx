@@ -25,6 +25,7 @@ interface AppStateContextType {
   updateRepertoire: (id: string, updates: Partial<Omit<Repertoire, 'id'>>) => void
   deleteRepertoire: (id: string) => void
   selectRepertoire: (id: string | null, mode: RepertoireMode | null) => void
+  navigateToPosition: (nodeId: string) => void
   exportAppState: () => void
   importAppState: () => Promise<void>
   resetAppState: () => void
@@ -139,10 +140,22 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const handleSelectRepertoire = (id: string | null, mode: RepertoireMode | null) => {
     selectRepertoire(id, mode) // Also save to localStorage
+    setState(prev => {
+      // Find the repertoire to get its root node
+      const repertoire = prev.repertoires.find(rep => rep.id === id);
+      return {
+        ...prev,
+        selectedRepertoireId: id,
+        repertoireMode: mode,
+        currentPositionNodeId: repertoire?.rootNodeId || null
+      };
+    });
+  }
+
+  const navigateToPosition = (nodeId: string) => {
     setState(prev => ({
       ...prev,
-      selectedRepertoireId: id,
-      repertoireMode: mode
+      currentPositionNodeId: nodeId
     }))
   }
 
@@ -160,6 +173,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         updateRepertoire,
         deleteRepertoire,
         selectRepertoire: handleSelectRepertoire,
+        navigateToPosition,
         exportAppState,
         importAppState,
         resetAppState

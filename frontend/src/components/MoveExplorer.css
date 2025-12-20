@@ -13,6 +13,9 @@
   padding: 12px 16px;
   font-weight: 600;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .move-explorer-header h3 {
@@ -20,10 +23,105 @@
   font-size: 18px;
 }
 
+.back-button {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.back-button:hover {
+  opacity: 0.8;
+}
+
 .move-explorer-content {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.position-info {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.current-position-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.position-comment {
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.position-evaluation {
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.moves-display {
+  margin-top: 8px;
+}
+
+.move-tree-node {
+  margin: 4px 0;
+}
+
+.move-line {
+  margin: 2px 0;
+}
+
+.move-entry {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.move-number {
+  font-weight: 600;
+  margin-right: 2px;
+  user-select: none;
+}
+
+.move-text {
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background-color 0.2s, transform 0.1s;
+  display: inline-block;
+}
+
+.move-text:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.move-text.main-line {
+  font-weight: bold;
+}
+
+.move-text.variation {
+  font-weight: normal;
+  opacity: 0.85;
+}
+
+.move-text.current-position {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.move-comment {
+  font-style: italic;
+  opacity: 0.75;
+  font-size: 0.9em;
 }
 
 .placeholder-text {

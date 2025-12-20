@@ -33,9 +33,10 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // Initialize game from repertoire when entering editing mode
   useEffect(() => {
     if (isEditingMode && selectedRepertoire) {
-      const rootNode = selectedRepertoire.nodes[selectedRepertoire.rootNodeId];
-      if (rootNode) {
-        const newGame = new Chess(rootNode.fen);
+      const currentNodeId = state.currentPositionNodeId || selectedRepertoire.rootNodeId;
+      const currentNode = selectedRepertoire.nodes[currentNodeId];
+      if (currentNode) {
+        const newGame = new Chess(currentNode.fen);
         setGame(newGame);
         setPosition(newGame.fen());
         setMoveHistory([]);
@@ -46,7 +47,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
       setPosition(newGame.fen());
       setMoveHistory([]);
     }
-  }, [isEditingMode, selectedRepertoire]);
+  }, [isEditingMode, selectedRepertoire, state.currentPositionNodeId]);
 
   // Handle piece drop for editing mode
   function onDrop(args: { piece: any; sourceSquare: string; targetSquare: string | null }): boolean {

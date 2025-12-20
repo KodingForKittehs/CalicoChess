@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { renderWithProvider } from '../test/testUtils'
 import MoveExplorer from './MoveExplorer'
+import type { AppState } from '../utils/appState'
 
 describe('MoveExplorer', () => {
   it('renders without crashing', () => {
@@ -9,9 +10,308 @@ describe('MoveExplorer', () => {
     expect(screen.getByText('Move Explorer')).toBeInTheDocument()
   })
 
-  it('renders placeholder text', () => {
+  it('renders placeholder text when no repertoire selected', () => {
     renderWithProvider(<MoveExplorer />)
-    expect(screen.getByText('Move history and analysis will appear here')).toBeInTheDocument()
+    expect(screen.getByText('Select a repertoire to view moves')).toBeInTheDocument()
+  })
+
+  it('renders placeholder when repertoire has no moves', () => {
+    const mockState: Partial<AppState> = {
+      selectedRepertoireId: 'test-rep-1',
+      currentPositionNodeId: 'initial',
+      repertoires: [{
+        id: 'test-rep-1',
+        name: 'Test Repertoire',
+        perspective: 'white',
+        rootNodeId: 'initial',
+        nodes: {
+          initial: {
+            id: 'initial',
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: [],
+            parentMoves: []
+          }
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }]
+    }
+    renderWithProvider(<MoveExplorer />, mockState)
+    expect(screen.getByText(/No moves in this repertoire yet/)).toBeInTheDocument()
+  })
+
+  it('displays moves in PGN-like format', () => {
+    const mockState: Partial<AppState> = {
+      selectedRepertoireId: 'test-rep-1',
+      currentPositionNodeId: 'initial',
+      repertoires: [{
+        id: 'test-rep-1',
+        name: 'Test Repertoire',
+        perspective: 'white',
+        rootNodeId: 'initial',
+        nodes: {
+          initial: {
+            id: 'initial',
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: [
+              {
+                san: 'e4',
+                uci: 'e2e4',
+                targetNodeId: 'node1',
+                isMainLine: true
+              }
+            ],
+            parentMoves: []
+          },
+          node1: {
+            id: 'node1',
+            fen: 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1',
+            moves: [
+              {
+                san: 'e5',
+                uci: 'e7e5',
+                targetNodeId: 'node2',
+                isMainLine: true
+              }
+            ],
+            parentMoves: [{
+              fromNodeId: 'initial',
+              san: 'e4',
+              uci: 'e2e4'
+            }]
+          },
+          node2: {
+            id: 'node2',
+            fen: 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2',
+            moves: [],
+            parentMoves: [{
+              fromNodeId: 'node1',
+              san: 'e5',
+              uci: 'e7e5'
+            }]
+          }
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }]
+    }
+    renderWithProvider(<MoveExplorer />, mockState)
+    
+    // Check for move numbers and moves
+    expect(screen.getByText('1.')).toBeInTheDocument()
+    expect(screen.getByText('e4')).toBeInTheDocument()
+    expect(screen.getByText('e5')).toBeInTheDocument()
+  })
+
+  it('highlights current position', () => {
+    const mockState: Partial<AppState> = {
+      selectedRepertoireId: 'test-rep-1',
+      currentPositionNodeId: 'node1',
+      repertoires: [{
+        id: 'test-rep-1',
+        name: 'Test Repertoire',
+        perspective: 'white',
+        rootNodeId: 'initial',
+        nodes: {
+          initial: {
+            id: 'initial',
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: [
+              {
+                san: 'e4',
+                uci: 'e2e4',
+                targetNodeId: 'node1',
+                isMainLine: true
+              }
+            ],
+            parentMoves: []
+          },
+          node1: {
+            id: 'node1',
+            fen: 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1',
+            moves: [],
+            parentMoves: [{
+              fromNodeId: 'initial',
+              san: 'e4',
+              uci: 'e2e4'
+            }]
+          }
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }]
+    }
+    const { container } = renderWithProvider(<MoveExplorer />, mockState)
+    
+    const e4Move = screen.getByText('e4')
+    expect(e4Move).toHaveClass('current-position')
+  })
+
+  it('renders back to root button when not at root', () => {
+    const mockState: Partial<AppState> = {
+      selectedRepertoireId: 'test-rep-1',
+      currentPositionNodeId: 'node1',
+      repertoires: [{
+        id: 'test-rep-1',
+        name: 'Test Repertoire',
+        perspective: 'white',
+        rootNodeId: 'initial',
+        nodes: {
+          initial: {
+            id: 'initial',
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: [
+              {
+                san: 'e4',
+                uci: 'e2e4',
+                targetNodeId: 'node1',
+                isMainLine: true
+              }
+            ],
+            parentMoves: []
+          },
+          node1: {
+            id: 'node1',
+            fen: 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1',
+            moves: [],
+            parentMoves: [{
+              fromNodeId: 'initial',
+              san: 'e4',
+              uci: 'e2e4'
+            }]
+          }
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }]
+    }
+    const { container } = renderWithProvider(<MoveExplorer />, mockState)
+    
+    const backButton = container.querySelector('.back-button')
+    expect(backButton).toBeInTheDocument()
+  })
+
+  it('does not render back button at root position', () => {
+    const mockState: Partial<AppState> = {
+      selectedRepertoireId: 'test-rep-1',
+      currentPositionNodeId: 'initial',
+      repertoires: [{
+        id: 'test-rep-1',
+        name: 'Test Repertoire',
+        perspective: 'white',
+        rootNodeId: 'initial',
+        nodes: {
+          initial: {
+            id: 'initial',
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: [],
+            parentMoves: []
+          }
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }]
+    }
+    const { container } = renderWithProvider(<MoveExplorer />, mockState)
+    
+    const backButton = container.querySelector('.back-button')
+    expect(backButton).not.toBeInTheDocument()
+  })
+
+  it('calls navigateToPosition when move is clicked', () => {
+    const mockState: Partial<AppState> = {
+      selectedRepertoireId: 'test-rep-1',
+      currentPositionNodeId: 'initial',
+      repertoires: [{
+        id: 'test-rep-1',
+        name: 'Test Repertoire',
+        perspective: 'white',
+        rootNodeId: 'initial',
+        nodes: {
+          initial: {
+            id: 'initial',
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: [
+              {
+                san: 'e4',
+                uci: 'e2e4',
+                targetNodeId: 'node1',
+                isMainLine: true
+              }
+            ],
+            parentMoves: []
+          },
+          node1: {
+            id: 'node1',
+            fen: 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1',
+            moves: [],
+            parentMoves: [{
+              fromNodeId: 'initial',
+              san: 'e4',
+              uci: 'e2e4'
+            }]
+          }
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }]
+    }
+    const { container } = renderWithProvider(<MoveExplorer />, mockState)
+    
+    const e4Move = screen.getByText('e4')
+    fireEvent.click(e4Move)
+    
+    // Should highlight the clicked move as current position
+    expect(e4Move).toHaveClass('current-position')
+  })
+
+  it('calls navigateToPosition when back button is clicked', () => {
+    const mockState: Partial<AppState> = {
+      selectedRepertoireId: 'test-rep-1',
+      currentPositionNodeId: 'node1',
+      repertoires: [{
+        id: 'test-rep-1',
+        name: 'Test Repertoire',
+        perspective: 'white',
+        rootNodeId: 'initial',
+        nodes: {
+          initial: {
+            id: 'initial',
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: [
+              {
+                san: 'e4',
+                uci: 'e2e4',
+                targetNodeId: 'node1',
+                isMainLine: true
+              }
+            ],
+            parentMoves: []
+          },
+          node1: {
+            id: 'node1',
+            fen: 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1',
+            moves: [],
+            parentMoves: [{
+              fromNodeId: 'initial',
+              san: 'e4',
+              uci: 'e2e4'
+            }]
+          }
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }]
+    }
+    const { container } = renderWithProvider(<MoveExplorer />, mockState)
+    
+    const backButton = container.querySelector('.back-button') as HTMLElement
+    expect(backButton).toBeInTheDocument()
+    
+    fireEvent.click(backButton)
+    
+    // Should no longer show back button (we're at root now)
+    expect(container.querySelector('.back-button')).not.toBeInTheDocument()
   })
 
   it('has the correct structure', () => {
