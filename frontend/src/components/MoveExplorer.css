@@ -37,21 +37,35 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 20px;
-  height: 20px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 24px 24px;
+  border-color: transparent transparent rgba(0, 0, 0, 0.3) transparent;
   cursor: nwse-resize;
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(102, 126, 234, 0.3) 0px,
-    rgba(102, 126, 234, 0.3) 2px,
+  transition: opacity 0.2s, border-color 0.2s;
+  z-index: 10;
+  opacity: 0;
+}
+
+.move-explorer .resize-handle::before {
+  content: '';
+  position: absolute;
+  bottom: -24px;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 24px 24px;
+  border-color: transparent transparent transparent transparent;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.2) 0px,
+    rgba(255, 255, 255, 0.2) 2px,
     transparent 2px,
     transparent 4px
   );
-  background-color: rgba(102, 126, 234, 0.2);
-  border-top-left-radius: 4px;
-  transition: opacity 0.2s, background-color 0.2s;
-  z-index: 10;
-  opacity: 0;
+  clip-path: polygon(100% 100%, 100% 0%, 0% 100%);
 }
 
 .move-explorer:hover .resize-handle {
@@ -59,5 +73,5 @@
 }
 
 .move-explorer .resize-handle:hover {
-  background-color: rgba(102, 126, 234, 0.4);
+  border-color: transparent transparent rgba(0, 0, 0, 0.5) transparent;
 }

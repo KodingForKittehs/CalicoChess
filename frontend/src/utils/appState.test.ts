@@ -3,11 +3,14 @@ import {
   loadState,
   saveState,
   updatePreferences,
+  updateTheme,
+  getCurrentTheme,
   resetState,
   addRepertoire,
   updateRepertoire,
   deleteRepertoire,
   exportState,
+  THEMES,
   type AppState,
   type Repertoire
 } from './appState'
@@ -220,6 +223,49 @@ describe('appState utility', () => {
       createElementSpy.mockRestore()
       appendChildSpy.mockRestore()
       removeChildSpy.mockRestore()
+    })
+  })
+
+  describe('updateTheme', () => {
+    it('updates theme preference', () => {
+      updateTheme('dark')
+      
+      const state = loadState()
+      expect(state.preferences.theme).toBe('dark')
+    })
+
+    it('handles invalid theme name', () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      
+      updateTheme('nonexistent')
+      
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Theme "nonexistent" not found')
+      
+      const state = loadState()
+      // Should not have updated to invalid theme
+      expect(state.preferences.theme).toBe('calico')
+      
+      consoleErrorSpy.mockRestore()
+    })
+  })
+
+  describe('getCurrentTheme', () => {
+    it('returns theme for valid theme name', () => {
+      const state = loadState()
+      state.preferences.theme = 'dark'
+      
+      const theme = getCurrentTheme(state)
+      expect(theme).toBe(THEMES.dark)
+      expect(theme.name).toBe('Dark')
+    })
+
+    it('returns calico theme as fallback for invalid theme', () => {
+      const state = loadState()
+      state.preferences.theme = 'invalid-theme' as any
+      
+      const theme = getCurrentTheme(state)
+      expect(theme).toBe(THEMES.calico)
+      expect(theme.name).toBe('Calico')
     })
   })
 
