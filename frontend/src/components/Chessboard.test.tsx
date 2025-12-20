@@ -46,4 +46,61 @@ describe('Chessboard', () => {
     const resizeHandle = container.querySelector('.resize-handle')
     expect(resizeHandle).toBeInTheDocument()
   })
+
+  it('handles drag resize', () => {
+    const onBoardSizeChange = vi.fn()
+    const { container } = render(<Chessboard boardSize={480} onBoardSizeChange={onBoardSizeChange} />)
+    
+    const resizeHandle = container.querySelector('.resize-handle') as HTMLElement
+    expect(resizeHandle).toBeInTheDocument()
+
+    // Simulate drag start
+    fireEvent.mouseDown(resizeHandle, { clientX: 100, clientY: 100 })
+    
+    // Simulate drag move
+    fireEvent.mouseMove(document, { clientX: 150, clientY: 150 })
+    
+    // Simulate drag end
+    fireEvent.mouseUp(document)
+    
+    expect(onBoardSizeChange).toHaveBeenCalled()
+  })
+
+  it('respects minimum size during drag resize', () => {
+    const onBoardSizeChange = vi.fn()
+    const { container } = render(<Chessboard boardSize={320} onBoardSizeChange={onBoardSizeChange} />)
+    
+    const resizeHandle = container.querySelector('.resize-handle') as HTMLElement
+
+    // Simulate drag that would go below minimum
+    fireEvent.mouseDown(resizeHandle, { clientX: 100, clientY: 100 })
+    fireEvent.mouseMove(document, { clientX: 0, clientY: 0 })
+    fireEvent.mouseUp(document)
+    
+    // Should clamp to minimum
+    const calls = onBoardSizeChange.mock.calls
+    if (calls.length > 0) {
+      const lastCall = calls[calls.length - 1][0]
+      expect(lastCall).toBeGreaterThanOrEqual(320)
+    }
+  })
+
+  it('respects maximum size during drag resize', () => {
+    const onBoardSizeChange = vi.fn()
+    const { container } = render(<Chessboard boardSize={800} onBoardSizeChange={onBoardSizeChange} />)
+    
+    const resizeHandle = container.querySelector('.resize-handle') as HTMLElement
+
+    // Simulate drag that would go above maximum
+    fireEvent.mouseDown(resizeHandle, { clientX: 100, clientY: 100 })
+    fireEvent.mouseMove(document, { clientX: 1000, clientY: 1000 })
+    fireEvent.mouseUp(document)
+    
+    // Should clamp to maximum
+    const calls = onBoardSizeChange.mock.calls
+    if (calls.length > 0) {
+      const lastCall = calls[calls.length - 1][0]
+      expect(lastCall).toBeLessThanOrEqual(800)
+    }
+  })
 })
