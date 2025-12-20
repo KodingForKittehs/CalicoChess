@@ -32,6 +32,16 @@ jobs:
       - name: Install dependencies
         working-directory: ./frontend
         run: npm ci
+
+      - name: Generate version file
+        run: |
+          TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
+          SHORT_SHA=$(git rev-parse --short=8 HEAD)
+          VERSION="${TIMESTAMP}-${SHORT_SHA}"
+          mkdir -p frontend/src
+          echo "{\"version\": \"${VERSION}\"}" > frontend/src/version.json
+          git add frontend/src/version.json || true
+          git commit -m "chore: update version to ${VERSION} [skip ci]" || echo "no changes to commit"
       
       - name: Run tests
         working-directory: ./frontend
