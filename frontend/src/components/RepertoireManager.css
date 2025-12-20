@@ -92,7 +92,7 @@
   border-radius: 4px;
   font-size: 1rem;
   background-color: rgba(255, 255, 255, 0.9);
-  color: inherit;
+  color: #111; /* ensure typed text is visible on light input bg */
 }
 
 .create-button {
@@ -203,7 +203,30 @@
   border-radius: 4px;
   font-size: 1rem;
   background-color: rgba(255, 255, 255, 0.9);
-  color: inherit;
+  color: #111; /* ensure typed text is visible on light input bg */
+}
+
+/* If the app adds a dark theme class on body or root, prefer darker text on inputs to keep readability */
+.dark .repertoire-manager .form-group input,
+.dark .repertoire-manager .form-group select,
+.dark .repertoire-manager .edit-input,
+.dark .repertoire-manager .edit-select {
+  background-color: rgba(255, 255, 255, 0.06); /* subtle dark input background */
+  color: #e6e6e6; /* light text for dark inputs */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Make placeholder color explicit for both themes */
+.repertoire-manager input::placeholder,
+.repertoire-manager select::placeholder,
+.repertoire-manager .edit-input::placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.dark .repertoire-manager input::placeholder,
+.dark .repertoire-manager select::placeholder,
+.dark .repertoire-manager .edit-input::placeholder {
+  color: rgba(230, 230, 230, 0.5);
 }
 
 .edit-actions {
