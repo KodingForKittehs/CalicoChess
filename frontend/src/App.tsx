@@ -7,6 +7,7 @@ import RepertoireManager from './components/RepertoireManager'
 import RepertoireSelector from './components/RepertoireSelector'
 import { useAppState } from './contexts/AppStateContext'
 import './App.css'
+import versionFile from './version.json'
 
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -87,6 +88,9 @@ function App() {
           isOpen={isRepertoireSelectorOpen}
           onClose={handleCloseRepertoireSelector}
         />
+        <div style={{textAlign: 'center', marginTop: '12px', fontSize: '0.8rem', opacity: 0.8}}>
+          Version {versionFile.version}
+        </div>
       </div>
     </div>
   )

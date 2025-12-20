@@ -1,0 +1,33 @@
+name: Deployer - Write Version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  write-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node (for prettier JSON if needed)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Generate version
+        run: |
+          TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
+          SHORT_SHA=$(git rev-parse --short=8 HEAD)
+          VERSION="${TIMESTAMP}-${SHORT_SHA}"
+          mkdir -p frontend/src
+          echo "{\"version\": \"${VERSION}\"}" > frontend/src/version.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/src/version.json
+          git commit -m "chore: update version to ${VERSION} [skip ci]" || echo "no changes to commit"
+          git push origin HEAD:main || echo "push failed"
