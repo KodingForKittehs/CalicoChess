@@ -188,8 +188,8 @@ function SettingsModal({
             </div>
           </div>
 
-          <div className="state-management-section">
-            <h3>State Management</h3>
+          <div className="ui-layout-section">
+            <h3>UI Layout</h3>
             <div className="swap-section">
               <h4>Board / Explorer Layout</h4>
               <p className="swap-help">Choose whether the chessboard appears on the left or the right of the Move Explorer.</p>
@@ -217,6 +217,10 @@ function SettingsModal({
                 </label>
               </div>
             </div>
+          </div>
+
+          <div className="state-management-section">
+            <h3>State Management</h3>
             <div className="state-buttons">
               <button 
                 className="state-button export" 
